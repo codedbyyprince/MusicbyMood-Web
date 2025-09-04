@@ -1,0 +1,29 @@
+# 🎶 Music by Mood  
+
+**Music by Mood** is a simple Flask web app that detects your **mood** and automatically plays music that fits it.  
+No searching, no playlists — just open it and let your emotions choose the soundtrack.
+
+---
+
+## ✨ How it Works  
+- The app takes your mood input  
+- Instantly matches it with the right songs from the built-in library  
+- Starts playing automatically in your browser  
+
+---
+
+## 🚀 Quick Start  
+
+```bash
+git clone git@github.com:codedbyyprince/MusicbyMood-Web.git
+cd MusicbyMood-Web
+pip install -r requirements.txt
+flask run
+
+Open http://127.0.0.1:5000 in your browser and enjoy 🎧
+📝 Notes
+
+This is an early version — feel free to fork, improve, or suggest new features.
+👤 Author
+
+Built with ❤️ by Prince Nagda
