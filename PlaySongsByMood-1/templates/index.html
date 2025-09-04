@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Emotion Music Player</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+        }
+        h2 {
+            margin-top: 30px;
+            color: #2d3e50;
+        }
+        #video {
+            border-radius: 10px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+        #capture {
+            margin: 20px 0;
+            padding: 10px 30px;
+            font-size: 1.1em;
+            background: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #capture:hover {
+            background: #27ae60;
+        }
+        #emotion {
+            font-size: 1.2em;
+            color: #34495e;
+            margin-bottom: 20px;
+        }
+        .video-container {
+            position: relative;
+            display: inline-block;
+        }
+        #overlay {
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+    </style>
+</head>
+<body>
+    <h2>Emotion Music Player</h2>
+    <div class="video-container">
+        <video id="video" width="320" height="240" autoplay muted></video>
+        <canvas id="overlay" width="320" height="240"></canvas>
+    </div>
+    <br>
+    <button id="capture">Capture</button>
+    <p id="emotion"></p>
+    <audio id="audio" src="" style="display:none;"></audio>
+
+    <script>
+        const video = document.getElementById('video');
+        const overlay = document.getElementById('overlay');
+        const context = overlay.getContext('2d');
+
+        // Show webcam
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => { video.srcObject = stream; })
+            .catch(err => { alert("Camera access denied."); });
+
+        // Optionally, you can add face detection here with face-api.js
+
+        document.getElementById('capture').onclick = function() {
+            // Draw current frame to a hidden canvas
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = video.width;
+            tempCanvas.height = video.height;
+            tempCanvas.getContext('2d').drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
+            tempCanvas.toBlob(function(blob) {
+                const formData = new FormData();
+                formData.append('image', blob, 'capture.png');
+                fetch('/detect', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('emotion').innerText = "Detected Emotion: " + data.emotion;
+                    const audio = document.getElementById('audio');
+                    if (data.emotion === 'happy') {
+                        audio.src = '/static/js/sounds/happi.mp3';
+                    } else if (data.emotion === 'neutral') {
+                        audio.src = '/static/js/sounds/sad.mp3';
+                    } else {
+                        audio.src = '';
+                    }
+                    if (audio.src) {
+                        audio.style.display = 'none';
+                        audio.play();
+                    }
+                });
+            }, 'image/png');
+        };
+    </script>
+</body>
+</html>
